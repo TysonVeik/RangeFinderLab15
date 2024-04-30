@@ -58,6 +58,14 @@ enum CurrentMode {
   CONTINUOUS_TONE,
   THRESHOLD_ADJUSTMENT
 };
+enum CurrentState {
+  INITIAL_START,
+  POWERING_UP,
+  READY,
+  ACTIVE_LISTENING,
+  ACTIVE_DETECTED,
+  QUISCENT
+};
 #endif //PICO
 
 
@@ -71,6 +79,9 @@ enum CurrentMode {
 */
 extern int mode;
 extern bool ping_requested;
+extern bool object_detected;
+extern int object_distance;
+extern int object_approach_rate;
 
 /*** DO NOT PLACE ANY CODE BELOW THIS LINE! ***/
 

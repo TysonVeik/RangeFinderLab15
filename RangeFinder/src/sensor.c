@@ -24,8 +24,30 @@
 #include "outputs.h"
 #include "interrupt_support.h"
 
+bool object_detected;
+int object_distance;
+int object_approach_rate;
+int ADC_register_value = 889;
+int state;
+adc_t* adc_structure = 0x4004c000;
+
+
+void handle_sensor_timer(void){
+
+}
+
+void detect_edge_pulse(void){
+
+}
 
 void initialize_sensor(void) {
+    state = INITIAL_START;
+    register_timer_ISR(1,32768, handle_sensor_timer());
+    register_pin_ISR(1L << ECHO, detect_edge_pulse());
+    object_detected = false;
+    adc_structure->control = adc_structure->control | 1 << 20;
+    //adc_structure->control = adc_structure->control || 0100 << 11;
+    adc_structure->control = adc_structure->control | 0011;
 
 }
 
