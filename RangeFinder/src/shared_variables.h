@@ -84,6 +84,11 @@ extern bool object_detected;
 extern uint64_t object_distance;
 extern uint32_t object_rate_of_approach;
 extern cowpi_timer_t *timer;
+extern bool alarm_activator = false;
+extern int alarm_counter;
+extern bool alarm_sounded;
+extern bool alarm_requested;
+extern int threshold_range;
 
 /*** DO NOT PLACE ANY CODE BELOW THIS LINE! ***/
 
