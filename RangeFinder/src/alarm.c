@@ -58,7 +58,7 @@ void initialize_alarm(void)
 
 void manage_alarm(void)
 {
-    if (mode = CONTINUOUS_TONE)
+    if (mode == CONTINUOUS_TONE)
     {
         generate_continuous_tone();
     }

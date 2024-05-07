@@ -32,6 +32,12 @@ int state;
 
 void sensor_timer_interrupt_handler(void)
 {
+    if (state == INITIAL_START) {
+        state = POWERING_UP;
+    } else if (state == POWERING_UP) {
+        state = READY;
+    }
+    
     if (state == ACTIVE_LISTENING)
     {
         object_detected = false;
@@ -74,8 +80,8 @@ void echo_pin_interrupt_handler(void)
 void initialize_sensor(void)
 {
     state = INITIAL_START;
-    register_timer_interrupt_handler(sensor_timer_interrupt_handler);
-    register_pin_interrupt_handler(TRIGGER, CHANGE, echo_pin_interrupt_handler);
+    register_timer_ISR(1, 32768, sensor_timer_interrupt_handler);
+    register_pin_ISR(1L << ECHO, echo_pin_interrupt_handler);
     object_detected = false;
     adc->control |= (1 << 20); 
     adc->control |= (4 << 12);

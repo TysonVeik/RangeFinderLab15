@@ -81,10 +81,10 @@ extern int mode;
 extern bool ping_requested;
 extern bool ping_requested;
 extern bool object_detected;
-extern int object_distance;
-extern int object_rate_of_approach;
-extern int isr_trigger_count = 0;
-extern bool sound_alarm = false;
+extern uint32_t object_distance;
+extern uint32_t object_rate_of_approach;
+// extern int isr_trigger_count = 0;
+// extern bool sound_alarm = false;
 
 /*** DO NOT PLACE ANY CODE BELOW THIS LINE! ***/
 
