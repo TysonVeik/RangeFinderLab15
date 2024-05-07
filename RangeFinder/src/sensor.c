@@ -54,6 +54,7 @@ void sensor_timer_interrupt_handler(void)
     else if (state == ACTIVE_DETECTED)
     {
         object_detected = true;
+        alarm_requested = true;
         state = QUIESCENT;
     }
     else if (state == QUIESCENT)
@@ -89,13 +90,14 @@ void initialize_sensor(void)
 void manage_sensor(void)
 {
     ping_requested = true;
+    alarm_sounded = true;
+    alarm_counter = 0;
     digitalWrite(TRIGGER, HIGH);
     ping_requested = false;
     delayMicroseconds(10);
     digitalWrite(TRIGGER, LOW);
 
     if (object_detected) {
-
         object_distance = ((timer_counter)*(256108888-121907*889));
         object_distance >>= 33;
 
