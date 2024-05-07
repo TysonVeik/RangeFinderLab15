@@ -59,6 +59,22 @@ void manage_controls(void)
         else
         {
             mode = THRESHOLD_ADJUSTMENT;
+            display_string(1, "Enter Threshold Range");
+            char key1;
+            char key2;
+            char key3;
+            char[3] threshold_string;
+            key1 = cowpi_get_keypress();
+            threshold_string[0] = key1;
+            display_string(2, threshold_string);
+            key2 = cowpi_get_keypress();
+            threshold_string[1] = key2;
+            display_string(2, threshold_string);
+            key3 = cowpi_get_keypress();
+            threshold_string[2] = key3;
+            display_string(3, threshold_string);
+            threshold_range = atoi(threshold_string);
         }
     }
 }
+
