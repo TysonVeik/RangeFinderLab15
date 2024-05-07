@@ -46,7 +46,7 @@ void alarm_interrupt_handler(void) {
     if (alarm_sounded) {
         if (alarm_counter < on_period) {
             digitalWrite(BUZZER, HIGH);
-            cowpi_illuminate_right_();
+            cowpi_illuminate_right();
             
         } else if (alarm_counter > on_period){
             alarm_sounded = false;
