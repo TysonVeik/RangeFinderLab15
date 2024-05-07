@@ -29,16 +29,18 @@ volatile unsigned int total_period = 50000;
 bool alarm_activator = false;
 
 void alarm_interrupt_handler(void) {
-    if (alarm_activator) {
-        digitalWrite(BUZZER, HIGH);
-    } else {
-        digitalWrite(BUZZER, LOW);
+    if (mode = CONTINUOUS_TONE) {
+        if (alarm_activator) {
+            digitalWrite(BUZZER, HIGH);
+        } else {
+            digitalWrite(BUZZER, LOW);
+        }
+        alarm_activator = !alarm_activator;
     }
-    alarm_activator = !alarm_activator
 }
 
 void initialize_alarm(void) {
-  register_timer_ISR(1, 100, alarm_interrupt_handler)
+  register_timer_ISR(1, 100, alarm_interrupt_handler);
 }
 
 void manage_alarm(void) {
