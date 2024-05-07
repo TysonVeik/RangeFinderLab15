@@ -94,15 +94,22 @@ void manage_sensor(void)
     alarm_counter = 0;
     digitalWrite(TRIGGER, HIGH);
     ping_requested = false;
-    delayMicroseconds(10);
-    digitalWrite(TRIGGER, LOW);
+    uint32_t start_time = timer->lower_word;
+    while ((timer->lower_word - start_time) < 10) {
 
+    }
+    digitalWrite(TRIGGER, LOW);
+    while (state = ACTIVE_LISTENING) {
+
+    }
     if (object_detected) {
         object_distance = ((timer_counter)*(256108888-121907*889));
         object_distance >>= 33;
-
-        display_string(1, (char*) &object_distance);
+        char distance_str[20];
+        sprintf(distance_str, "Distance: %d cm", (int)(object_distance / 58));
+        display_string(1, distance_str);
     } else {
-        display_string(1, "No Object Detected");
+        display_string(1, "No Object");
+        display_string(2, "Detected");
     }
 }
