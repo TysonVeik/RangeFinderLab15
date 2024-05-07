@@ -1,13 +1,13 @@
-/**************************************************************************//**
- *
- * @file sensor.c
- *
- * @author (Tyson Veik)
- * @author (Colman Scharff)
- *
- * @brief Code to manage the distance sensor.
- *
- ******************************************************************************/
+/**************************************************************************/ /**
+*
+* @file sensor.c
+*
+* @author (Tyson Veik)
+* @author (Colman Scharff)
+*
+* @brief Code to manage the distance sensor.
+*
+******************************************************************************/
 
 /*
  * RangeFinder GroupLab assignment and starter code (c) 2023 Christopher A. Bohn
@@ -26,18 +26,26 @@
 
 adc_t *adc = (adc_t *)0x4004c000;
 bool object_detected;
-uint32_t object_distance;
+uint64_t object_distance;
 uint32_t object_rate_of_approach;
 int state;
+cowpi_timer_t *timer;
+uint32_t lower_32bits;
+uint32_t upper_32bits;
+uint64_t timer_counter;
+uint32_t sensor_start_time;
+uint32_t sensor_end_time;
 
 void sensor_timer_interrupt_handler(void)
 {
-    if (state == INITIAL_START) {
+    if (state == INITIAL_START)
+    {
         state = POWERING_UP;
-    } else if (state == POWERING_UP) {
+    }
+    else if (state == POWERING_UP)
+    {
         state = READY;
     }
-    
     if (state == ACTIVE_LISTENING)
     {
         object_detected = false;
@@ -56,24 +64,14 @@ void sensor_timer_interrupt_handler(void)
 
 void echo_pin_interrupt_handler(void)
 {
-    static uint32_t start_time = 0;
-    if (is_rising_edge(ECHO))
-    {
-        reset_timer(start_time);
-        start_time = get_timer_counter();
-        state = ACTIVE_LISTENING;
-    }
-    else if (is_falling_edge(ECHO) && state == ACTIVE_LISTENING)
-    {
-        uint32_t pulse_duration = get_timer_counter() - start_time;
+    reset_timer(1);
+    timer = (cowpi_timer_t *)0x40054000;
+    state = ACTIVE_LISTENING;
+    if (digitalRead(ECHO) == LOW) {
+        lower_32bits = timer->lower_word;
+        upper_32bits = timer->upper_word;
+        timer_counter = ((uint64_t)upper_32bits << 32 | lower_32bits);
         state = ACTIVE_DETECTED;
-
-        if (pulse_duration > 0)
-        {
-            uint32_t adc_value = 889;
-            object_distance = pulse_duration * (256108888 - (121907 * adc_value)) / 233;
-
-        }
     }
 }
 
@@ -83,26 +81,26 @@ void initialize_sensor(void)
     register_timer_ISR(1, 32768, sensor_timer_interrupt_handler);
     register_pin_ISR(1L << ECHO, echo_pin_interrupt_handler);
     object_detected = false;
-    adc->control |= (1 << 20); 
+    adc->control |= (1 << 20);
     adc->control |= (4 << 12);
     adc->control |= 0b11;
 }
 
 void manage_sensor(void)
 {
-    if (ping_requested)
-    {
-        set_pin_high(TRIGGER);
-        busy_wait_us(10);
-        set_pin_low(TRIGGER);
-        ping_requested = false;
-    }
-    if (object_detected)
-    {
-        display_distance(object_distance);
-    }
-    else
-    {
-        display_no_object_detected();
+    ping_requested = true;
+    digitalWrite(TRIGGER, HIGH);
+    ping_requested = false;
+    delayMicroseconds(10);
+    digitalWrite(TRIGGER, LOW);
+
+    if (object_detected) {
+
+        object_distance = ((timer_counter)*(256108888-121907*889));
+        object_distance >>= 33;
+
+        display_string(1, (char*) &object_distance);
+    } else {
+        display_string(1, "No Object Detected");
     }
 }

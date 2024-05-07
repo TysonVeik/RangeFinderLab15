@@ -25,52 +25,19 @@
 
 const unsigned int on_period = 500;
 volatile unsigned int total_period = 50000;
-volatile unsigned int isr_trigger_count = 0;
-volatile bool sound_alarm = false;
 
-void timer_interrupt_handler(void)
+
+void alarm_interrupt_handler(void) 
 {
-    isr_trigger_count++;
-    if (isr_trigger_count >= total_period)
-    {
-        isr_trigger_count = 0;
-    }
-
-    if (sound_alarm && isr_trigger_count < on_period)
-    {
-
-        digitalWrite(BUZZER, HIGH);
-        cowpi_illuminate_right_led();
-    }
-    else
-    {
-        digitalWrite(BUZZER, LOW);
-        cowpi_deluminate_right_led();
-        sound_alarm = false;
-    }
+    // every other invocation will place a 1 on the BUZZER pin and will place a 0 on the alternate invocations
 }
 
 void initialize_alarm(void)
 {
-    register_timer_interrupt_handler(timer_interrupt_handler);
-    configure_timer_interrupt(100);
+    register_timer_ISR(1,100,alarm_interrupt_handler);
 }
 
 void manage_alarm(void)
 {
-    if (mode == CONTINUOUS_TONE)
-    {
-        generate_continuous_tone();
-    }
-    else
-    {
-        stop_continuous_tone();
-    }
-}
 
-void handle_ping_request(void)
-{
-    sound_alarm = true;
-    isr_trigger_count = 0;
-    ping_requested = false;
 }
