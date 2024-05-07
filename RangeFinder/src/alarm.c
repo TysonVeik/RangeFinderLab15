@@ -23,21 +23,24 @@
 #include "outputs.h"
 #include "interrupt_support.h"
 
+
 const unsigned int on_period = 500;
 volatile unsigned int total_period = 50000;
+bool alarm_activator = false;
 
-
-void alarm_interrupt_handler(void) 
-{
-    // every other invocation will place a 1 on the BUZZER pin and will place a 0 on the alternate invocations
+void alarm_interrupt_handler(void) {
+    if (alarm_activator) {
+        digitalWrite(BUZZER, HIGH);
+    } else {
+        digitalWrite(BUZZER, LOW);
+    }
+    alarm_activator = !alarm_activator
 }
 
-void initialize_alarm(void)
-{
-    register_timer_ISR(1,100,alarm_interrupt_handler);
+void initialize_alarm(void) {
+  register_timer_ISR(1, 100, alarm_interrupt_handler)
 }
 
-void manage_alarm(void)
-{
-
+void manage_alarm(void) {
+  
 }
